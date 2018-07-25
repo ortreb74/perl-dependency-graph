@@ -4,23 +4,30 @@ use warnings;        # Avertissement des messages d'erreurs
 use strict;          # Vérification des déclarations
 
 sub new {
-	my ( $class, $directory, $line ) = @_; # passage des paramètres
+	my ( $class, $originalNode, $originalText ) = @_; # passage des paramètres
 	my $this = {}; # création d'une référence vers un hachage  
+	
+	$this->{"absoluteFileName"} = computeRelativeName($originalNode->{"absoluteFileName"}, $originalText);
+	
+	if (open(my $inputFile, '<', $this->{"absoluteFileName"} )) {
+		$this->{"underlyingFile"} = $inputFile;
+		$this->{"green"} = 1;
+	} else {
+		print "impossible de trouver le fichier : " . $this->{"absoluteFileName"} . "\n"; 
+	}
 	
 	bless $this, $class; # pour rendre le hachage différent
 }
 
 sub initiate {
-
 	# intialisation avec un chemin absolu
 
 	my ( $class, $absoluteFileName, $underlyingFile ) = @_; # passage des paramètres
-	my $this = {}; # création d'une référence vers un hachage  
-
-	print $absoluteFileName;
+	my $this = {}; # création d'une référence vers un hachage  	
 	
 	$this->{"absoluteFileName"} = $absoluteFileName;	
 	$this->{"underlyingFile"} = $underlyingFile;
+	$this->{"green"} = 1;
 	
 	bless $this, $class; # pour rendre le hachage différent
 }
@@ -33,10 +40,30 @@ sub grep {
 	my $inputFile = $this->{"underlyingFile"};			
 	
 	while (my $line = <$inputFile>) {	
-		push @result, $line;
+		if ($line =~ /#include\s+.(.+).\s*$/) {
+			push @result, $1;
+		}			
 	}
 	
 	return @result;
+}
+
+sub isGreen {
+	my $this = shift; # pour se retrouver soi même	
+	return exists($this->{"green"});
+}
+
+sub get {
+	my ($this, $key) = @_;
+	
+	return $this->{$key};
+}
+
+
+sub computeRelativeName{
+	(my $baseName, my $nextName) = @_;
+	print "adresse à déterminer à partir de $baseName et $nextName \n";
+	return $nextName;
 }
 
 1;                # Important, à ne pas oublier
