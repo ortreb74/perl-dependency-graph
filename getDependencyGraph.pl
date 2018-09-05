@@ -27,7 +27,10 @@ sub oneLevelDown {
 		print $word . "\n";
 		
 		if ($newNode->isGreen()) {
-			oneLevelNode($newNode);
+			$hashStatus{$word} = "green";
+			oneLevelDown($newNode);
+		} else {
+			$hashStatus{$word} = "red";
 		}
 	}
 }

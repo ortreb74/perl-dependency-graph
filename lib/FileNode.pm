@@ -63,7 +63,15 @@ sub get {
 sub computeRelativeName{
 	(my $baseName, my $nextName) = @_;
 	print "adresse à déterminer à partir de $baseName et $nextName \n";
-	return $nextName;
+	
+	# soit $nextName commence par un / et result = $nextName
+	if (substr($nextName,0,1) eq "/") {
+		return $nextName;
+	} else {
+		# sinon on enlève le dernier mot de basename on rajoute un / et on concatène les deux
+		$baseName =~ m!(.*/).*$!;
+		return $1 . $nextName;
+	}
 }
 
 1;                # Important, à ne pas oublier
