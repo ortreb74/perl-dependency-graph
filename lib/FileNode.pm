@@ -4,8 +4,11 @@ use warnings;        # Avertissement des messages d'erreurs
 use strict;          # Vérification des déclarations
 
 sub new {
-	my ( $class, $originalNode, $originalText ) = @_; # passage des paramètres
+	my ( $class, $originalNode, $originalText, $fileNumber, $positionInFile ) = @_; # passage des paramètres
 	my $this = {}; # création d'une référence vers un hachage  
+	
+	$this->{"fileNumber"} = $fileNumber;
+	$this->{"positionInFile"} = $positionInFile;
 	
 	$this->{"absoluteFileName"} = computeRelativeName($originalNode->{"absoluteFileName"}, $originalText);
 	
@@ -64,13 +67,18 @@ sub computeRelativeName{
 	(my $baseName, my $nextName) = @_;
 	print "adresse à déterminer à partir de $baseName et $nextName \n";
 	
+	# chemin absolu
 	# soit $nextName commence par un / et result = $nextName
 	if (substr($nextName,0,1) eq "/") {
 		return $nextName;
 	} else {
+		# chemin relatif
 		# sinon on enlève le dernier mot de basename on rajoute un / et on concatène les deux
-		$baseName =~ m!(.*/).*$!;
-		return $1 . $nextName;
+		if ($baseName =~ m!(.*/).*$!) {
+			return $1 . $nextName;
+		} else {
+			return $1 . $nextName;
+		}
 	}
 }
 

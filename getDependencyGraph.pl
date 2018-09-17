@@ -18,17 +18,22 @@ my @domaine;
 
 sub oneLevelDown {
 	my $node = shift;	
+	my $fileNumber = shift;
 	
+	$fileNumber++;
+	
+	my $positionInFile = 0;
 	for my $word ($node->grep()) {
+		$positionInFile++;
 		if (exists ($hashStatus{$word})) { next };
 		
- 		my $newNode = FileNode->new($node, $word);
+ 		my $newNode = FileNode->new($node, $word, $fileNumber, $positionInFile);
 		push @domaine, $newNode;
 		print $word . "\n";
 		
 		if ($newNode->isGreen()) {
 			$hashStatus{$word} = "green";
-			oneLevelDown($newNode);
+			oneLevelDown($newNode, $fileNumber);
 		} else {
 			$hashStatus{$word} = "red";
 		}
@@ -47,7 +52,7 @@ $hashStatus{$inputFileName} = "green";
 my $node = FileNode->initiate($inputFileName, $inputFile);
 
 push @domaine, $node;
-oneLevelDown($node);
+oneLevelDown($node, 0);
 
 print "Bilan : \n";
 for my $node (@domaine) {
@@ -57,7 +62,7 @@ for my $node (@domaine) {
 		print color('bold red');
 	}
 	
-	print $node->get("absoluteFileName") . "\n";
+	print $node->get("absoluteFileName") . " " . $node->get("fileNumber") . " " . $node->get("positionInFile") ."\n";
 	print color('reset');
 }
  
