@@ -10,7 +10,7 @@ use Term::ANSIColor;
 use FindBin; # pour utiliser une bibliothèque
 use lib "$FindBin::Bin/lib"; # pour utiliser une bibliothèque
 
-use FileNode;
+use DtdFileNode;
 
 
 my %hashStatus;
@@ -27,9 +27,8 @@ sub oneLevelDown {
 		$positionInFile++;
 		if (exists ($hashStatus{$word})) { next };
 		
- 		my $newNode = FileNode->new($node, $word, $fileNumber, $positionInFile);
-		push @domaine, $newNode;
-		print $word . "\n";
+ 		my $newNode = DtdFileNode->new($node, $word, $fileNumber, $positionInFile);
+		push @domaine, $newNode;		
 		
 		if ($newNode->isGreen()) {
 			$hashStatus{$word} = "green";
@@ -49,7 +48,7 @@ open (my $inputFile, '<', $inputFileName) or die "Could not open file $inputFile
 
 $hashStatus{$inputFileName} = "green";
 
-my $node = FileNode->initiate($inputFileName, $inputFile);
+my $node = DtdFileNode->initiate($inputFileName, $inputFile);
 
 push @domaine, $node;
 oneLevelDown($node, 0);
@@ -61,6 +60,10 @@ for my $node (@domaine) {
 	} else {
 		print color('bold red');
 	}
+	
+	my $absoluteFileName = $node->get('absoluteFileName');
+	my $fileNumber = $node->get('fileNumber');
+	my $positionInFile = $node->get('positionInFile');	
 	
 	print $node->get("absoluteFileName") . " " . $node->get("fileNumber") . " " . $node->get("positionInFile") ."\n";
 	print color('reset');
